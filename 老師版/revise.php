@@ -1,14 +1,25 @@
 <?php
-session_start();
-if (!$_SESSION['uid']) {
+if (!isset($_COOKIE['token'])) {
     header('location: login.php');
     die();
 }
 require('db.php');
 
+// 取得使用者資料
+$token = $_COOKIE['token'];
+$sql = 'SELECT * FROM userinfo WHERE token = ?';
+$stmt = $mysqli->prepare($sql);
+$stmt->bind_param('s', $token);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$cname = $row['cname'];
+$pwd = $row['pwd'];
+$birthday = $row['birthday'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 確認使用者已提交表單
-    $uid = $_SESSION['uid'];
+    $uid = $row['uid']; // 從資料庫中取得 uid
     $cname = $_POST['cname'];
     $pwd = $_POST['pwd'];
     $birthday = $_POST['birthday'];
@@ -20,12 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image_data = file_get_contents($image);
     } else {
         // 如果沒有上傳圖片，保留原始圖片資料
-        $sql = 'SELECT image FROM userinfo WHERE uid = ?';
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param('s', $uid);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
         $image_data = $row['image'];
     }
 
@@ -54,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mime_type = (new finfo(FILEINFO_MIME_TYPE))->buffer($image_data);
         $image_base64 = base64_encode($image_data);
         $src = "data:{$mime_type};base64,{$image_base64}";
-        // echo '<img src="' . $src . '" width="200">';
         echo '<script>
         setTimeout(function() { window.location.href = "welcome.php"; }, 1000);
         </script>';
@@ -66,27 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
-// 取得使用者資料
-$uid = $_SESSION['uid'];
-$sql = 'SELECT * FROM userinfo WHERE uid = ?';
-$stmt = $mysqli->prepare($sql);
-$stmt->bind_param('s', $uid);
-$stmt->execute();
-$result = $stmt->get_result();
-$row = $result->fetch_assoc();
-$cname = $row['cname'];
-$pwd = $row['pwd'];
-$birthday = $row['birthday'];
 
 $image = $row['image'];
 if ($image == null) {
-    $image = file_get_contents(("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zbW2LsUxp_IT0_O9-khcIY-6_BnL_pp_Wg&usqp=CAU"));
+    $image = file_get_contents("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1zbW2LsUxp_IT0_O9-khcIY-6_BnL_pp_Wg&usqp=CAU");
 }
 $mime_type = (new finfo(FILEINFO_MIME_TYPE))->buffer($image);
 $image_base64 = base64_encode($image);
 $src = "data:{$mime_type};base64,{$image_base64}";
 
-$stmt->close();
 $mysqli->close();
 ?>
 
