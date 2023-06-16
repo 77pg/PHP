@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    window.onload = function () {
+        uid.addEventListener('blur', function () {
+            fetch(`homework.php?uid=${uid.value}&pwd=${pwd.value}`)
+                .then(function (response) {
+                    return response.text();
+                })
+                .then(function (data) {
+                    data = data.trim();
+                    userinfo.innerHTML = data;
+                });
+        });
+    // window.onload = function () {
+    //     const uidInput = document.getElementById('uid');
+
+    //     uidInput.addEventListener('blur', function () {
+    //         const uid = uidInput.value;
+    //         const pwd = document.getElementById('pwd').value;
+
+    //         fetch(`homework.php?uid=${uid}&pwd=${pwd}`)
+    //             .then(function (response) {
+    //                 return response.text();
+    //             })
+    //             .then(function (data) {
+    //                 data = data.trim();
+    //                 userinfo.innerHTML = data;
+    //             });
+    //     });
+    
+        
+        log.onclick = function (event) {
+            event.preventDefault();
+            fetch(`logincheck.php?uid=${uid.value}&pwd=${pwd.value}`)
+                .then(function (response) {
+                    return response.text();
+                })
+                .then(function (data) {
+                    data = data.trim();
+                    userinfo.innerHTML = data;
+                });
+        };
+    }
+</script>
+
+<body>
+    <form>
+        <input placeholder="Input UserId" name="uid" id="uid">
+        <p></p>
+        <input placeholder="Input Password" name="pwd" id="pwd" type="password">
+        <p></p>
+        <button id="query">註冊</button>
+        <button id="log">登入</button>
+    </form>
+    <p></p>
+    <div id="container">
+        <div id="userinfo"></div>
+        <div id="userpass"></div>
+    </div>
+</body>
+
+</html>

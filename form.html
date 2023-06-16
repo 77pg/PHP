@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<script>    
+    // jquery ajax
+    $(function () {
+        $("button").click(function (event) {
+            event.preventDefault();
+            $('#op').val($(this).attr('id'))
+            $.post(
+                "hello.php",
+                // 序列化serialize，轉成字串
+                $("form").serialize(),
+                function(result){
+                    let data=JSON.parse(result)
+                    $('#result').html(`${data.a} ${data.op} ${data.b} = ${data.answer}`)
+                }
+            )
+        })
+
+    })
+</script>
+
+<body>
+    <form id="form">
+        <input type="hidden" id="op" name="op">
+        A:<input id="a" name="a">
+        <p>
+        <p>
+            B:<input id="b" name="b">
+        <p>
+        <p>
+            <button id="add" name="op">+</button>
+            <button id="sub" name="op">-</button>
+            <button id="mul" name="op">×</button>
+            <button id="div" name="op">/</button>
+    </form>
+    <p></p>
+    <div id="result">0</div>
+</body>
+
+</html>
