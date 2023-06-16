@@ -1,5 +1,5 @@
 <?php
-// http://localhost/php/老師版/func.php
+// http://localhost/老師版/func.php
 
 // 1
 // $a=10;//全域變數
